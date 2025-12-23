@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(
     OrderProcessorModule,
     {
-      useFactory: (rmq: RmqConfigService) => rmq.createMicroserviceConfig(MessageQueueEnum.ORDER),
+      useFactory: (rmq: RmqConfigService) => rmq.createConfig(MessageQueueEnum.ORDER),
       inject: [RmqConfigService],
     },
   );

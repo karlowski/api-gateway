@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(
     PaymentProcessorModule,
     {
-      useFactory: (rmq: RmqConfigService) => rmq.createMicroserviceConfig(MessageQueueEnum.PAYMENT),
+      useFactory: (rmq: RmqConfigService) => rmq.createConfig(MessageQueueEnum.PAYMENT),
       inject: [RmqConfigService],
     },
   );

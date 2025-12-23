@@ -36,17 +36,4 @@ export class RmqConfigService {
       },
     }
   }
-
-  public createMicroserviceConfig(queue: MessageQueueEnum): RmqOptions {
-    return {
-      transport: Transport.RMQ,
-      options: {
-        urls: [this.getUrl()],
-        queue,
-        queueOptions: {
-          durable: true,
-        },
-      },
-    }
-  }
 }
