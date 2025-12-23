@@ -1,31 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { AsyncMicroserviceOptions, Transport } from '@nestjs/microservices';
+import { AsyncMicroserviceOptions } from '@nestjs/microservices';
 import { PaymentProcessorModule } from './payment-processor.module';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
+import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(
     PaymentProcessorModule,
     {
-      useFactory: (configService: ConfigService) => {
-        const user = configService.get<string>('RMQ_USER');
-        const password = configService.get<string>('RMQ_PASSWORD');
-        const host = configService.get<string>('RMQ_HOST');;
-        const port = configService.get<number>('RMQ_AMQP_PORT');
-
-        return {
-          transport: Transport.RMQ,
-          options: {
-            urls: [`amqp://${user}:${password}@${host}:${port}`],
-            queue: MessageQueueEnum.PAYMENT,
-            queueOptions: {
-              durable: true
-            },
-          }
-        }
-      },
-      inject: [ConfigService],
+      useFactory: (rmq: RmqConfigService) => rmq.createMicroserviceConfig(MessageQueueEnum.PAYMENT),
+      inject: [RmqConfigService],
     },
   );
   await app.listen();
