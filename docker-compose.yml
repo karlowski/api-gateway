@@ -1,0 +1,63 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+    ports:
+      - "${RMQ_AMQP_PORT}:5672"
+      - "${RMQ_MANAGEMENT_PORT}:15672"
+
+  api-gateway:
+    build:
+      context: .
+      args:
+        ENTRY: main.js
+    env_file:
+      - .env    
+    depends_on:
+      - mysql
+      - rabbitmq
+    ports:
+      - "3000:3000"
+
+  order-service:
+    build:
+      context: .
+      args:
+        ENTRY: services/order/src/main.js
+    env_file:
+      - .env    
+    depends_on:
+      - mysql
+      - rabbitmq
+    ports:
+      - "3001:3000"
+
+  payment-service:
+    build:
+      context: .
+      args:
+        ENTRY: services/payment/src/main.js
+    env_file:
+      - .env    
+    depends_on:
+      - mysql
+      - rabbitmq
+    ports:
+      - "3002:3000"
+
+volumes:
+  mysql-data:

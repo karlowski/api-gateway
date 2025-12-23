@@ -4,6 +4,7 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [PaymentController],
@@ -11,11 +12,16 @@ import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queu
     PaymentService,
     {
       provide: ClientProxyTokenEnum.PAYMENT_PUBLISHER,
-      useFactory: (): ClientProxy => {
+      useFactory: (configService: ConfigService): ClientProxy => {
+        const user = configService.get<string>('RMQ_USER');
+        const password = configService.get<string>('RMQ_PASSWORD');
+        const host = configService.get<string>('RMQ_HOST');;
+        const port = configService.get<number>('RMQ_AMQP_PORT');
+
         return ClientProxyFactory.create({
           transport: Transport.RMQ,
           options: {
-            urls: [`amqp://rabbitmq:5672`],
+            urls: [`amqp://${user}:${password}@${host}:${port}`],
             queue: MessageQueueEnum.PAYMENT,
             prefetchCount: 1,
             persistent: true,
@@ -30,6 +36,7 @@ import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queu
           },
         });
       },
+      inject: [ConfigService]
     }
   ],
 })

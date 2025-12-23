@@ -1,22 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { CreateOrderContract } from '../../../lib/message-broker/contracts/order/create-order.contract';
+import { UpdateOrderContract } from '../../../lib/message-broker/contracts/order/update-order.contract';
 
 @Injectable()
 export class OrderProcessorService {
-  create(createOrderDto: CreateOrderDto) {
+  create(createOrderDto: CreateOrderContract) {
     return 'This action adds a new order';
   }
 
-  findAll() {
-    return `This action returns all order`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
-
-  update(id: number, updateOrderDto: UpdateOrderDto) {
+  update(id: number, updateOrderDto: UpdateOrderContract) {
     return `This action updates a #${id} order`;
   }
 

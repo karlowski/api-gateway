@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
-import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { MessagePatternEnum } from 'src/lib/message-broker/enums/message-pattern.enum';
 
 @Injectable()
 export class OrderService {
@@ -12,8 +14,9 @@ export class OrderService {
   ) { }
 
   public async create(createOrderDto: CreateOrderDto) {
-    this.clientProxy.send('', createOrderDto);
-    return 'This action adds a new order';
+    
+
+    return firstValueFrom(this.clientProxy.send(MessagePatternEnum.ORDER_CREATE, createOrderDto));
   }
 
   public async findAll() {

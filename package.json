@@ -5,8 +5,13 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "workspaces": [
+    "src/services/*"
+  ],
   "scripts": {
     "build": "nest build",
+    "build:order": "nest build --workspace src/services/order",
+    "build:payment": "nest build --workspace src/services/payment",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

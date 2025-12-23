@@ -5,5 +5,5 @@ export class UpdateOrderContract {
     return { id, ...data }
   }
 
-  id: number;
+  id!: number;
 }
