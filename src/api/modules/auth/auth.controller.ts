@@ -1,19 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  signUp(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.signUp(createAuthDto);
+  @Post('sign-up')
+  public async signUp(@Body() dto: SignUpDto) {
+    return this.authService.signUp(dto);
   }
 
-  @Post()
-  login(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.login(createAuthDto);
+  @Post('login')
+  public async login(@Body() dto: LoginDto) {
+    return this.authService.login(dto);
   }
 }
