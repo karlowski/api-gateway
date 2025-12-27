@@ -13,7 +13,8 @@ import { AuthTokensDto } from './dto/auth-tokens.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(User) 
+    private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) { }

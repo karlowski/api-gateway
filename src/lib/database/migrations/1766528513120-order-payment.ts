@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
+
 import { OrderStatusEnum } from '../../domain/enums/order-status.enum';
 import { PaymentStatusEnum } from '../../domain/enums/payment-status.enum';
 
@@ -8,14 +9,15 @@ export class OrderPayment1766528513120 implements MigrationInterface {
       CREATE TABLE \`order_record\` (
         \`id\` INT NOT NULL AUTO_INCREMENT,
         \`total\` DECIMAL(10,2) NOT NULL,
+        \`title\` VARCHAR(255) NOT NULL,
         \`status\` ENUM(
-          '${OrderStatusEnum.PENDING}', 
-          '${OrderStatusEnum.CANCELLED}', 
-          '${OrderStatusEnum.IN_PROGRESS}', 
-          '${OrderStatusEnum.COMPLETED}'
+          ${Object.values(OrderStatusEnum)
+            .map(v => `'${v}'`)
+            .join(', ')}
         ) NOT NULL DEFAULT '${OrderStatusEnum.PENDING}',
         \`payment_id\` INT NULL,
         \`payment_confirmed_at\` TIMESTAMP NULL DEFAULT NULL,
+        \`cancelled_at\` TIMESTAMP NULL DEFAULT NULL,
         \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (\`id\`)
@@ -27,9 +29,9 @@ export class OrderPayment1766528513120 implements MigrationInterface {
         \`id\` INT NOT NULL AUTO_INCREMENT,
         \`sum\` DECIMAL(10,2) NOT NULL,
         \`status\` ENUM(
-          '${PaymentStatusEnum.PENDING}', 
-          '${PaymentStatusEnum.CONFIRMED}',
-          '${PaymentStatusEnum.REJECTED}'
+          ${Object.values(PaymentStatusEnum)
+            .map(v => `'${v}'`)
+            .join(', ')}
         ) NOT NULL DEFAULT '${PaymentStatusEnum.PENDING}',
         \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

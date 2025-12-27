@@ -1,4 +1,3 @@
-// src/lib/domain/entities/order-record.entity.ts
 import { 
   Entity, 
   PrimaryGeneratedColumn, 
@@ -8,16 +7,24 @@ import {
   ManyToOne, 
   JoinColumn 
 } from 'typeorm';
+
 import { OrderStatusEnum } from '../../domain/enums/order-status.enum';
 import { Payment } from './payment.entity';
 
 @Entity('order_record')
-export class OrderRecord {
+export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  price: string;
+  total: string;
+
+  @Column({ 
+    type: 'decimal', 
+    precision: 10, 
+    scale: 2 
+  })
+  title: string;
 
   @Column({ 
     type: 'enum', 
@@ -36,6 +43,13 @@ export class OrderRecord {
     nullable: true
   })
   paymentConfirmedAt?: Date;
+
+  @Column({ 
+    name: 'cancelled_at', 
+    type: 'timestamp', 
+    nullable: true
+  })
+  cancelledAt?: Date;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
