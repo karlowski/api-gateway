@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
-import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { ClientProxy, ClientProxyFactory } from '@nestjs/microservices';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
 import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
+import { Order } from '../../../lib/database/entities/order.entity';
 
 @Module({
   controllers: [OrderController],
-  
+  imports: [
+    TypeOrmModule.forFeature([Order]),
+    RmqModule,
+  ],
   providers: [
     OrderService,
     {
@@ -21,6 +27,5 @@ import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
       inject: [RmqConfigService],
     }
   ],
-  imports: [RmqModule]
 })
 export class OrderModule { }

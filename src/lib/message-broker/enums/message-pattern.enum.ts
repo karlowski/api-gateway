@@ -1,7 +1,6 @@
 export enum MessagePatternEnum {
   ORDER_CREATE,
-  ORDER_UPDATE,
-  ORDER_DELETE,
+  ORDER_CANCEL,
   PAYMENT_CREATE,
   // TODO: messaging
   // ...
