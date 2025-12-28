@@ -33,6 +33,13 @@ export class Order {
   })
   status: OrderStatusEnum;
 
+  @Column({ 
+    name: 'payment_id',
+    nullable: true,
+    select: false,
+  })
+  paymentId: number;
+
   @ManyToOne(() => Payment, { nullable: true })
   @JoinColumn({ name: 'payment_id' })
   payment?: Payment;
