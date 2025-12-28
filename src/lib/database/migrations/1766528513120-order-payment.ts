@@ -27,7 +27,7 @@ export class OrderPayment1766528513120 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE \`payment\` (
         \`id\` INT NOT NULL AUTO_INCREMENT,
-        \`sum\` DECIMAL(10,2) NOT NULL,
+        \`amount\` DECIMAL(10,2) NOT NULL,
         \`status\` ENUM(
           ${Object.values(PaymentStatusEnum)
             .map(v => `'${v}'`)
