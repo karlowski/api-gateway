@@ -10,6 +10,7 @@ import { ClientProxyTokenEnum } from '../../../api/common/enums/client-proxy-tok
 import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
 import { Order } from '../../../lib/database/entities/order.entity';
+import { databaseModule } from '../../../lib/database/datasource';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Order } from '../../../lib/database/entities/order.entity';
       envFilePath: '../../../.env',
     }),
     RmqModule,
+    databaseModule,
     TypeOrmModule.forFeature([Order]),
   ],
   controllers: [OrderProcessorController],

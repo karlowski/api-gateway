@@ -14,7 +14,7 @@ import { OrderStatusEnum } from '../../../lib/domain/enums/order-status.enum';
 @Injectable()
 export class OrderProcessorService {
   constructor(
-    @Inject(ClientProxyTokenEnum.ORDER_PUBLISHER)
+    @Inject(ClientProxyTokenEnum.PAYMENT_PUBLISHER)
     private readonly paymentClient: ClientProxy,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
