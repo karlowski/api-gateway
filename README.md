@@ -70,14 +70,18 @@ ___
 ### TODO:
 
 1. API:
-	- Payment module (full flow);
+	- ~~Payment module (full flow)~~;
 
 2. Microservices:
 	- Order (full flow);
 	- Payment (full flow);
 
 3. Configuration:
-	- incorporate migrations in the main flow;
+	- ~~incorporate migrations in the main flow~~;
+	- DLQ.
+
+4. Business logic:
+	- Payment mechanism;	
 ___
 
 #### Future plans:

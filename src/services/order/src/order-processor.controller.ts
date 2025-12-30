@@ -1,20 +1,28 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 
 import { OrderProcessorService } from './order-processor.service';
 import { CreateOrderContract } from '../../../lib/message-broker/contracts/order/create-order.contract';
+import { CancelOrderContract } from '../../../lib/message-broker/contracts/order/cancel-order.contract';
+import { MessagePatternEnum } from '../../../lib/message-broker/enums/message-pattern.enum';
 
 @Controller()
 export class OrderProcessorController {
   constructor(private readonly orderService: OrderProcessorService) {}
 
-  @MessagePattern('createOrder')
-  create(@Payload() createOrderDto: CreateOrderContract) {
-    return this.orderService.create(createOrderDto);
+  @MessagePattern(MessagePatternEnum.ORDER_CREATE)
+  create(
+    @Ctx() context: RmqContext,
+    @Payload() payload: CreateOrderContract,
+  ) {
+    return this.orderService.create(context, payload);
   }
 
-  @MessagePattern('removeOrder')
-  remove(@Payload() id: number) {
-    return this.orderService.remove(id);
+  @MessagePattern(MessagePatternEnum.ORDER_CANCEL)
+  remove(
+    @Ctx() context: RmqContext,
+    @Payload() payload: CancelOrderContract,
+  ) {
+    return this.orderService.cancel(context, payload);
   }
 }
