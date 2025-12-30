@@ -4,4 +4,7 @@ export class CreatePaymentContract {
   constructor(data: CreatePaymentDto) {
     return { ...data }
   }
+
+  amount: number;
+  orderId: number;
 }
