@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Transport, RmqOptions } from '@nestjs/microservices';
+
 import { MessageQueueEnum } from '../../enums/message-queue.enum';
 
 @Injectable()

@@ -13,7 +13,7 @@ export class Payment {
   id: number;
 
   @Column()
-  sum: string;
+  amount: string;
 
   @Column({ 
     type: 'enum', 
