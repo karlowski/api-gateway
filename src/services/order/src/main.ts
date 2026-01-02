@@ -6,10 +6,19 @@ import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queu
 import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
 
 async function bootstrap() {
+  const ctx = await NestFactory.createApplicationContext(OrderProcessorModule);
+  const rmq = ctx.get(RmqConfigService);
+
+  await rmq.initDeadLetterQueue(MessageQueueEnum.ORDER);
+  await ctx.close();
+
   const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(
     OrderProcessorModule,
     {
-      useFactory: (rmq: RmqConfigService) => rmq.createConfig(MessageQueueEnum.ORDER),
+      useFactory: (rmq: RmqConfigService) => 
+        rmq.createConfig(MessageQueueEnum.ORDER, {
+          deadLetterRoutingKey: MessageQueueEnum.ORDER
+        }),
       inject: [RmqConfigService],
     },
   );
