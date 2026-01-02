@@ -4,3 +4,6 @@ export enum MessageQueueEnum {
   // TODO:
   // NOTIFICATION = 'notification_queue'
 }
+
+export const dlxName   = (q: MessageQueueEnum) => `${q}.dlx`;
+export const dlqName   = (q: MessageQueueEnum) => `${q}.dlq`;

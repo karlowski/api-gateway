@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Transport, RmqOptions } from '@nestjs/microservices';
+import amqp from 'amqp-connection-manager';
 
-import { MessageQueueEnum } from '../../enums/message-queue.enum';
+import { dlqName, dlxName, MessageQueueEnum } from '../../enums/message-queue.enum';
+import { AmqplibQueueOptions } from '@nestjs/microservices/external/rmq-url.interface';
 
 @Injectable()
 export class RmqConfigService {
@@ -19,16 +21,55 @@ export class RmqConfigService {
     return `amqp://${user}:${pass}@${host}:${port}`;
   }
 
-  public createConfig(queue: MessageQueueEnum): RmqOptions {
+  public async initDeadLetterQueue(queue: MessageQueueEnum): Promise<void> {
+    const dlx = dlxName(queue);
+    const dlq = dlqName(queue);
+
+    const connection = amqp.connect(this.getUrl());
+    const channel = connection.createChannel();
+
+    await channel.assertExchange(dlx, 'direct', { durable: true });
+    await channel.assertQueue(dlq, { durable: true });
+    await channel.bindQueue(dlq, dlx, queue);
+    await channel.close();
+
+    await connection.close();
+  }
+
+  public async initRetryQueue(queue: MessageQueueEnum): Promise<void> {
+    const dlx = dlxName(queue);
+    const retryQueue = `${queue}.retry`;
+
+    const connection = amqp.connect(this.getUrl());
+    const channel = connection.createChannel();
+
+    await channel.assertExchange(dlx, 'direct', { durable: true });
+    await channel.assertQueue(retryQueue, {
+      durable: true,
+      messageTtl: 3000,
+      deadLetterExchange: '',
+      deadLetterRoutingKey: queue,
+    });
+
+    await channel.bindQueue(retryQueue, dlx, 'retry');
+    await channel.close();
+    await connection.close();
+  }
+
+  public createConfig(queue: MessageQueueEnum, options: AmqplibQueueOptions = {}): RmqOptions {
+    const dlx = dlxName(queue);
+
     return {
       transport: Transport.RMQ,
       options: {
         urls: [this.getUrl()],
         queue,
         prefetchCount: 1,
-        noAck: true,
+        noAck: false,
         queueOptions: {
           durable: true,
+          deadLetterExchange: dlx,
+          ...options,
         },
         socketOptions: {
           heartbeatIntervalInSeconds: 60,
