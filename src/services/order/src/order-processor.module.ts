@@ -7,7 +7,7 @@ import { OrderProcessorService } from './order-processor.service';
 import { OrderProcessorController } from './order-processor.controller';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
 import { ClientProxyTokenEnum } from '../../../api/common/enums/client-proxy-token.enum'; // TODO: move from API
-import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
+import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
 import { Order } from '../../../lib/database/entities/order.entity';
 import { databaseModule } from '../../../lib/database/datasource';
