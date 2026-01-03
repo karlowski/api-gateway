@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Transport, RmqOptions } from '@nestjs/microservices';
 import amqp from 'amqp-connection-manager';
 
-import { dlqName, dlxName, MessageQueueEnum } from '../../enums/message-queue.enum';
+import { dlqName, dlxName, MessageQueueEnum, retryName } from '../../../enums/message-queue.enum';
 import { AmqplibQueueOptions } from '@nestjs/microservices/external/rmq-url.interface';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class RmqConfigService {
 
   public async initRetryQueue(queue: MessageQueueEnum): Promise<void> {
     const dlx = dlxName(queue);
-    const retryQueue = `${queue}.retry`;
+    const retryQueue = retryName(queue);
 
     const connection = amqp.connect(this.getUrl());
     const channel = connection.createChannel();

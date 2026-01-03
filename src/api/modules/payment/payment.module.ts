@@ -6,7 +6,7 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
-import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
+import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
 import { Order } from '../../../lib/database/entities/order.entity';
 import { Payment } from '../../../lib/database/entities/payment.entity';

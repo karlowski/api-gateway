@@ -3,7 +3,7 @@ import { AsyncMicroserviceOptions } from '@nestjs/microservices';
 
 import { OrderProcessorModule } from './order-processor.module';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
-import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
+import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
 
 async function bootstrap() {
   const ctx = await NestFactory.createApplicationContext(OrderProcessorModule);
