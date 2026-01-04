@@ -22,9 +22,7 @@ import { Order } from '../../../lib/database/entities/order.entity';
       provide: ClientProxyTokenEnum.ORDER_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy => 
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.ORDER, true, {
-            deadLetterRoutingKey: retryName(MessageQueueEnum.ORDER),
-          })
+          rmq.createConfig(MessageQueueEnum.ORDER, true)
         ),
       inject: [RmqConfigService],
     }
