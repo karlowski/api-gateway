@@ -75,6 +75,7 @@ export class RmqConfigService {
         queueOptions: {
           durable: true,
           deadLetterExchange: dlx,
+          deadLetterRoutingKey: retryName(queue),
           ...options,
         },
         socketOptions: {

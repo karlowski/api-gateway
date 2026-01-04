@@ -14,9 +14,7 @@ async function bootstrap() {
     OrderProcessorModule,
     {
       useFactory: (rmq: RmqConfigService) => 
-        rmq.createConfig(MessageQueueEnum.ORDER, false, {
-          deadLetterRoutingKey: retryName(MessageQueueEnum.ORDER),
-        }),
+        rmq.createConfig(MessageQueueEnum.ORDER, false),
       inject: [RmqConfigService],
     },
   );

@@ -17,9 +17,7 @@ async function bootstrap() {
     PaymentProcessorModule,
     {
       useFactory: (rmq: RmqConfigService) => 
-        rmq.createConfig(MessageQueueEnum.PAYMENT, false, {
-          deadLetterRoutingKey: `${MessageQueueEnum.PAYMENT}.retry`
-        }),
+        rmq.createConfig(MessageQueueEnum.PAYMENT, false),
       inject: [RmqConfigService],
     },
   );

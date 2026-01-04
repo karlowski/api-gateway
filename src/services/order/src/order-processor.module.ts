@@ -29,9 +29,7 @@ import { databaseModule } from '../../../lib/database/datasource';
       provide: ClientProxyTokenEnum.PAYMENT_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy =>
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.PAYMENT, true, {
-            deadLetterRoutingKey: retryName(MessageQueueEnum.PAYMENT),
-          })
+          rmq.createConfig(MessageQueueEnum.PAYMENT, true)
         ),
       inject: [RmqConfigService],
     }

@@ -23,7 +23,7 @@ import { Payment } from '../../../lib/database/entities/payment.entity';
       provide: ClientProxyTokenEnum.PAYMENT_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy =>
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.PAYMENT)
+          rmq.createConfig(MessageQueueEnum.PAYMENT, true)
         ),
       inject: [RmqConfigService],
     }
