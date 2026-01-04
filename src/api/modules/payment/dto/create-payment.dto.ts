@@ -1,12 +1,12 @@
-import { IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
 export class CreatePaymentDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Min(1)
   amount: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   orderId: number;
 }

@@ -15,6 +15,7 @@ export class OrderProcessorController {
     @Ctx() context: RmqContext,
     @Payload() payload: CreateOrderContract,
   ) {
+    console.log('HERE');
     return this.orderService.create(context, payload);
   }
 

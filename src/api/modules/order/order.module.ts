@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
-import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
-import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/rmq-config.service';
+import { MessageQueueEnum, retryName } from '../../../lib/message-broker/enums/message-queue.enum';
+import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
 import { Order } from '../../../lib/database/entities/order.entity';
 
@@ -22,7 +22,9 @@ import { Order } from '../../../lib/database/entities/order.entity';
       provide: ClientProxyTokenEnum.ORDER_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy => 
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.ORDER)
+          rmq.createConfig(MessageQueueEnum.ORDER, true, {
+            deadLetterRoutingKey: retryName(MessageQueueEnum.ORDER),
+          })
         ),
       inject: [RmqConfigService],
     }

@@ -28,9 +28,7 @@ export class OrderService {
       total: dto.total.toFixed(2),
     });
 
-    firstValueFrom(
-      this.clientProxy.send(MessagePatternEnum.ORDER_CREATE, order)
-    );
+    this.clientProxy.emit(MessagePatternEnum.ORDER_CREATE, order);
 
     return {
       message: 'Your order was successfully created',
@@ -70,9 +68,7 @@ export class OrderService {
       ])
     });
 
-    firstValueFrom(
-      this.clientProxy.send(MessagePatternEnum.ORDER_CANCEL, order)
-    );
+    this.clientProxy.emit(MessagePatternEnum.ORDER_CANCEL, order);
     
     return {
       message: 'The order cancellation successfully initiated',
