@@ -20,8 +20,8 @@ export class User {
   @Index({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
-  password?: string;
+  @Column({ nullable: false })
+  password: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

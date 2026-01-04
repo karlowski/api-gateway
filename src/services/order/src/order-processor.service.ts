@@ -28,7 +28,7 @@ export class OrderProcessorService {
       // make some side effects and calculations
       for (let i = 0; i < 10000; i++) { }
 
-      this.paymentClient.send<CreatePaymentContract>(MessagePatternEnum.PAYMENT_CREATE, {
+      this.paymentClient.emit<CreatePaymentContract>(MessagePatternEnum.PAYMENT_CREATE, {
         ...payload
       });
     } catch (error) {

@@ -8,7 +8,7 @@ import { OrderProcessorController } from './order-processor.controller';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
 import { ClientProxyTokenEnum } from '../../../api/common/enums/client-proxy-token.enum'; // TODO: move from API
 import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
-import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
+import { MessageQueueEnum, retryName } from '../../../lib/message-broker/enums/message-queue.enum';
 import { Order } from '../../../lib/database/entities/order.entity';
 import { databaseModule } from '../../../lib/database/datasource';
 
@@ -29,7 +29,9 @@ import { databaseModule } from '../../../lib/database/datasource';
       provide: ClientProxyTokenEnum.PAYMENT_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy =>
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.PAYMENT)
+          rmq.createConfig(MessageQueueEnum.PAYMENT, true, {
+            deadLetterRoutingKey: retryName(MessageQueueEnum.PAYMENT),
+          })
         ),
       inject: [RmqConfigService],
     }
