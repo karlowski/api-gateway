@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Transport, RmqOptions } from '@nestjs/microservices';
+import { AmqplibQueueOptions } from '@nestjs/microservices/external/rmq-url.interface';
 import amqp from 'amqp-connection-manager';
 
-import { dlqName, dlxName, MessageQueueEnum, retryName } from '../../../enums/message-queue.enum';
-import { AmqplibQueueOptions } from '@nestjs/microservices/external/rmq-url.interface';
+import { dlqName, dlxName, mainName, MessageQueueEnum, retryName } from '../../../enums/message-queue.enum';
 
 @Injectable()
 export class RmqConfigService {
@@ -24,13 +24,14 @@ export class RmqConfigService {
   public async initDeadLetterQueue(queue: MessageQueueEnum): Promise<void> {
     const dlx = dlxName(queue);
     const dlq = dlqName(queue);
+    const main = mainName(queue);
 
     const connection = amqp.connect(this.getUrl());
     const channel = connection.createChannel();
 
     await channel.assertExchange(dlx, 'direct', { durable: true });
     await channel.assertQueue(dlq, { durable: true });
-    await channel.bindQueue(dlq, dlx, queue);
+    await channel.bindQueue(dlq, dlx, main);
     await channel.close();
 
     await connection.close();
@@ -38,34 +39,39 @@ export class RmqConfigService {
 
   public async initRetryQueue(queue: MessageQueueEnum): Promise<void> {
     const dlx = dlxName(queue);
-    const retryQueue = retryName(queue);
+    const main = mainName(queue);
+    const retry = retryName(queue);
 
     const connection = amqp.connect(this.getUrl());
     const channel = connection.createChannel();
 
     await channel.assertExchange(dlx, 'direct', { durable: true });
-    await channel.assertQueue(retryQueue, {
+    await channel.assertQueue(retry, {
       durable: true,
       messageTtl: 3000,
       deadLetterExchange: '',
-      deadLetterRoutingKey: queue,
+      deadLetterRoutingKey: main,
     });
 
-    await channel.bindQueue(retryQueue, dlx, 'retry');
+    await channel.bindQueue(retry, dlx, 'retry');
     await channel.close();
     await connection.close();
   }
 
-  public createConfig(queue: MessageQueueEnum, options: AmqplibQueueOptions = {}): RmqOptions {
+  public createConfig(
+    queue: MessageQueueEnum, 
+    noAck = false,  // TODO: find a way to make it better
+    options: AmqplibQueueOptions = {}
+  ): RmqOptions {
     const dlx = dlxName(queue);
 
     return {
       transport: Transport.RMQ,
       options: {
         urls: [this.getUrl()],
-        queue,
+        queue: mainName(queue),
         prefetchCount: 1,
-        noAck: false,
+        noAck,
         queueOptions: {
           durable: true,
           deadLetterExchange: dlx,

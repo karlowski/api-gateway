@@ -13,7 +13,7 @@ import { AuthTokensDto } from './dto/auth-tokens.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) 
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -51,15 +51,18 @@ export class AuthService {
       this.configService.get<number>('PASSWORD_SALT_ROUNDS'),
     );
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const userEntity = this.userRepository.create({
+
+    await this.userRepository.save({
       username,
       email,
       password: hashedPassword,
     });
 
-    await this.userRepository.save(userEntity);
-
-    return this.login({ email, password });
+    return this.login({ 
+      username, 
+      email, 
+      password 
+    });
   }
 
   public async login(loginDto: LoginDto): Promise<AuthTokensDto> {
