@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
-import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
+import { ClientProxyTokenEnum } from '../../../lib/message-broker/enums/client-proxy-token.enum';
 import { MessageQueueEnum } from '../../../lib/message-broker/enums/message-queue.enum';
 import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
@@ -13,20 +13,17 @@ import { Payment } from '../../../lib/database/entities/payment.entity';
 
 @Module({
   controllers: [PaymentController],
-  imports: [
-    TypeOrmModule.forFeature([Order, Payment]),
-    RmqModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Order, Payment]), RmqModule],
   providers: [
     PaymentService,
     {
       provide: ClientProxyTokenEnum.PAYMENT_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy =>
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.PAYMENT, true)
+          rmq.createConfig(MessageQueueEnum.PAYMENT, true),
         ),
       inject: [RmqConfigService],
-    }
+    },
   ],
 })
-export class PaymentModule { }
+export class PaymentModule {}

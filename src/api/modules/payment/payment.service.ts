@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
+import { ClientProxyTokenEnum } from '../../../lib/message-broker/enums/client-proxy-token.enum';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
 import { Payment } from '../../../lib/database/entities/payment.entity';
 import { Order } from '../../../lib/database/entities/order.entity';
@@ -31,11 +31,11 @@ export class PaymentService {
       throw new NotFoundException('Order for a payment was not found');
     }
 
-    firstValueFrom(
+    void firstValueFrom(
       this.clientProxy.send(MessagePatternEnum.PAYMENT_CREATE, {
         amount,
         order,
-      })
+      }),
     );
 
     return {

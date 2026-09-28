@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderProcessorService } from './order-processor.service';
 import { OrderProcessorController } from './order-processor.controller';
 import { RmqModule } from '../../../lib/message-broker/modules/rmq/rmq.module';
-import { ClientProxyTokenEnum } from '../../../api/common/enums/client-proxy-token.enum'; // TODO: move from API
+import { ClientProxyTokenEnum } from '../../../lib/message-broker/enums/client-proxy-token.enum';
 import { RmqConfigService } from '../../../lib/message-broker/modules/rmq/serivces/rmq-config.service';
 import { MessageQueueEnum, retryName } from '../../../lib/message-broker/enums/message-queue.enum';
 import { Order } from '../../../lib/database/entities/order.entity';
@@ -29,10 +29,10 @@ import { databaseModule } from '../../../lib/database/datasource';
       provide: ClientProxyTokenEnum.PAYMENT_PUBLISHER,
       useFactory: (rmq: RmqConfigService): ClientProxy =>
         ClientProxyFactory.create(
-          rmq.createConfig(MessageQueueEnum.PAYMENT, true)
+          rmq.createConfig(MessageQueueEnum.PAYMENT, true),
         ),
       inject: [RmqConfigService],
     }
   ],
 })
-export class OrderProcessorModule { }
+export class OrderProcessorModule {}
