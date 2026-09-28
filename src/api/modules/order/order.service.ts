@@ -1,11 +1,10 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { firstValueFrom } from 'rxjs';
 import { FindOptionsWhere, In, Repository } from 'typeorm';
 
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ClientProxyTokenEnum } from '../../common/enums/client-proxy-token.enum';
+import { ClientProxyTokenEnum } from '../../../lib/message-broker/enums/client-proxy-token.enum';
 import { MessagePatternEnum } from '../../../lib/message-broker/enums/message-pattern.enum';
 import { Order } from '../../../lib/database/entities/order.entity';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
@@ -20,10 +19,10 @@ export class OrderService {
     private readonly clientProxy: ClientProxy,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-  ) { }
+  ) {}
 
   public async create(dto: CreateOrderDto): Promise<BaseResponseDto<Order>> {
-    const order = await this.orderRepository.save({ 
+    const order = await this.orderRepository.save({
       ...dto,
       total: dto.total.toFixed(2),
     });
@@ -33,15 +32,11 @@ export class OrderService {
     return {
       message: 'Your order was successfully created',
       data: order,
-    }
+    };
   }
 
   public async findAll(filters: OrderFiltersDto): Promise<PaginationDto<Order>> {
-    const {
-      page,
-      take,
-      skip,
-    } = filters;
+    const { page, take, skip } = filters;
 
     const queryBuilder = this.orderRepository.createQueryBuilder('order');
 
@@ -62,10 +57,10 @@ export class OrderService {
   public async cancel(id: number): Promise<BaseResponseDto<null>> {
     const order = await this.findById(id, [], {
       status: In([
-        OrderStatusEnum.PENDING, 
-        OrderStatusEnum.CONFIRMED, 
-        OrderStatusEnum.IN_PROGRESS
-      ])
+        OrderStatusEnum.PENDING,
+        OrderStatusEnum.CONFIRMED,
+        OrderStatusEnum.IN_PROGRESS,
+      ]),
     });
 
     this.clientProxy.emit(MessagePatternEnum.ORDER_CANCEL, order);
@@ -76,14 +71,14 @@ export class OrderService {
   }
 
   private async findById(
-    id: number, 
-    relations: string[] = [], 
-    where: FindOptionsWhere<Order> = {}
+    id: number,
+    relations: string[] = [],
+    where: FindOptionsWhere<Order> = {},
   ): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: {
-        ...where, 
-        id, 
+        ...where,
+        id,
       },
       relations,
     });

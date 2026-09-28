@@ -8,7 +8,7 @@ import { MessagePatternEnum } from '../../../lib/message-broker/enums/message-pa
 import { CreatePaymentContract } from '../../../lib/message-broker/contracts/payment/create-payment.contact';
 import { CancelOrderContract } from '../../../lib/message-broker/contracts/order/cancel-order.contract';
 import { Order } from '../../../lib/database/entities/order.entity';
-import { ClientProxyTokenEnum } from '../../../api/common/enums/client-proxy-token.enum'; // TODO: move from API
+import { ClientProxyTokenEnum } from '../../../lib/message-broker/enums/client-proxy-token.enum';
 import { OrderStatusEnum } from '../../../lib/domain/enums/order-status.enum';
 
 @Injectable()
@@ -20,17 +20,23 @@ export class OrderProcessorService {
     private readonly orderRepository: Repository<Order>,
   ) { }
 
-  public async create(context: RmqContext, payload: CreateOrderContract): Promise<void> {
+  public async create(
+    context: RmqContext,
+    payload: CreateOrderContract,
+  ): Promise<void> {
     const channel = context.getChannelRef();
     const message = context.getMessage();
 
     try {
       // make some side effects and calculations
-      for (let i = 0; i < 10000; i++) { }
+      for (let i = 0; i < 10000; i++) {}
 
-      this.paymentClient.emit<CreatePaymentContract>(MessagePatternEnum.PAYMENT_CREATE, {
-        ...payload
-      });
+      this.paymentClient.emit<CreatePaymentContract>(
+        MessagePatternEnum.PAYMENT_CREATE,
+        {
+          ...payload,
+        },
+      );
     } catch (error) {
       // TODO: logging
       channel.nack(message, false, true);
@@ -45,12 +51,12 @@ export class OrderProcessorService {
 
     try {
       // make some side effects and calculations
-      for (let i = 0; i < 10000; i++) { }
+      for (let i = 0; i < 10000; i++) {}
 
       await this.orderRepository.save({
         ...payload,
         status: OrderStatusEnum.CANCELLED,
-      })
+      });
 
       // TODO: cancel pending payments..?
     } catch (error) {
