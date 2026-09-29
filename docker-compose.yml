@@ -20,11 +20,16 @@ services:
       - "${RMQ_AMQP_PORT}:5672"
       - "${RMQ_MANAGEMENT_PORT}:15672"
 
+  lib:
+    build: ./lib
+    image: app-lib
+    scale: 0
+
   api-gateway:
     build:
-      context: .
-      args:
-        ENTRY: main.js
+      context: ./services/api
+      additional_contexts:
+        lib: service:lib
     env_file:
       - .env    
     depends_on:
@@ -35,9 +40,9 @@ services:
 
   order-service:
     build:
-      context: .
-      args:
-        ENTRY: services/order/src/main.js
+      context: ./services/order
+      additional_contexts:
+        lib: service:lib
     env_file:
       - .env    
     depends_on:
@@ -48,9 +53,9 @@ services:
 
   payment-service:
     build:
-      context: .
-      args:
-        ENTRY: services/payment/src/main.js
+      context: ./services/order
+      additional_contexts:
+        lib: service:lib
     env_file:
       - .env    
     depends_on:
