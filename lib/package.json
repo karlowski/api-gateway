@@ -1,0 +1,50 @@
+{
+  "name": "@app/lib",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "database.js",
+    "database.d.ts"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/microservices": "^11.1.9",
+    "@nestjs/typeorm": "^11.0.0",
+    "amqp-connection-manager": "^5.0.0",
+    "dotenv": "^16.4.7 || ^17.0.0",
+    "typeorm": "^0.3.28"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/typeorm": {
+      "optional": true
+    },
+    "typeorm": {
+      "optional": true
+    },
+    "dotenv": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/microservices": "^11.1.9",
+    "@nestjs/typeorm": "^11.0.0",
+    "@types/node": "^22.10.7",
+    "amqp-connection-manager": "^5.0.0",
+    "amqplib": "^0.10.9",
+    "dotenv": "^16.4.7 || ^17.0.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.28",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,32 @@
+import * as path from 'path';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import * as dotenv from 'dotenv';
+
+dotenv.config({
+  path: path.resolve(process.cwd(), '../../.env')
+});
+
+const config: DataSourceOptions = {
+  type: 'mysql',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  entities: [path.join(__dirname, './entities/*.entity.{js,ts}')],
+  synchronize: false,
+  logging: true,
+  logger: 'file',
+  migrations: [path.join(__dirname, './migrations/*.{js,ts}')],
+  migrationsRun: true,
+  multipleStatements: true,
+};
+
+export default new DataSource({
+  ...config,
+});
+
+export const databaseModule = TypeOrmModule.forRoot({ 
+  ...config 
+});
