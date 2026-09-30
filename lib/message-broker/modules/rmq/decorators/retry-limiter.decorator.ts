@@ -1,6 +1,8 @@
 import { RmqContext } from '@nestjs/microservices';
 
-export const RetryLimiter = (limit: number) => {
+import { dlxName, mainName, MessageQueueEnum } from '../../../enums/message-queue.enum';
+
+export const RetryLimiter = (queue: MessageQueueEnum, limit: number) => {
   return (
     _target: any,
     _propertyKey: string,
@@ -18,9 +20,10 @@ export const RetryLimiter = (limit: number) => {
       const msg = ctx.getMessage();
 
       const deathHeader = msg.properties.headers?.['x-death'];
-      const retryCount = deathHeader?.[0]?.count ?? 0;
+      const retryCount = deathHeader?.[0]?.count || 0;
 
       if (retryCount >= limit) {
+        channel.publish(dlxName(queue), mainName(queue), msg.content, { headers: msg.properties.headers });
         channel.ack(msg);
 
         // TODO:

@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
+import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
 
 import { CreateOrderContract, MessagePatternEnum, CreatePaymentContract, CancelOrderContract, ClientProxyTokenEnum, OrderStatusEnum } from '@app/lib';
@@ -26,15 +27,15 @@ export class OrderProcessorService {
       // make some side effects and calculations
       for (let i = 0; i < 10000; i++) {}
 
-      this.paymentClient.emit<CreatePaymentContract>(
+      await lastValueFrom(this.paymentClient.emit<CreatePaymentContract>(
         MessagePatternEnum.PAYMENT_CREATE,
         {
           ...payload,
         },
-      );
+      ));
     } catch (error) {
       // TODO: logging
-      channel.nack(message, false, true);
+      return channel.nack(message, false, false);
     }
 
     channel.ack(message);
@@ -56,7 +57,7 @@ export class OrderProcessorService {
       // TODO: cancel pending payments..?
     } catch (error) {
       // TODO: logging
-      channel.nack(message, false, true);
+      return channel.nack(message, false, false);
     }
 
     channel.ack(message);

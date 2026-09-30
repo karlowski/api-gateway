@@ -53,7 +53,7 @@ services:
 
   payment-service:
     build:
-      context: ./services/order
+      context: ./services/payment
       additional_contexts:
         lib: service:lib
     env_file:
