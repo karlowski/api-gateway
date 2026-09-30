@@ -28,6 +28,7 @@ export class RmqConfigService {
 
     const connection = amqp.connect(this.getUrl());
     const channel = connection.createChannel();
+    await channel.waitForConnect();
 
     await channel.assertExchange(dlx, 'direct', { durable: true });
     await channel.assertQueue(dlq, { durable: true });
@@ -44,6 +45,7 @@ export class RmqConfigService {
 
     const connection = amqp.connect(this.getUrl());
     const channel = connection.createChannel();
+    await channel.waitForConnect();
 
     await channel.assertExchange(dlx, 'direct', { durable: true });
     await channel.assertQueue(retry, {
@@ -53,7 +55,7 @@ export class RmqConfigService {
       deadLetterRoutingKey: main,
     });
 
-    await channel.bindQueue(retry, dlx, 'retry');
+    await channel.bindQueue(retry, dlx, retry);
     await channel.close();
     await connection.close();
   }
