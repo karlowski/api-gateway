@@ -30,7 +30,7 @@ export class PaymentService {
     }
 
     void firstValueFrom(
-      this.clientProxy.send(MessagePatternEnum.PAYMENT_CREATE, {
+      this.clientProxy.emit(MessagePatternEnum.PAYMENT_CREATE, {
         amount,
         order,
       }),

@@ -10,3 +10,6 @@ export * from './message-broker/enums/message-queue.enum';
 export * from './message-broker/modules/rmq/decorators/retry-limiter.decorator';
 export * from './message-broker/modules/rmq/rmq.module';
 export * from './message-broker/modules/rmq/serivces/rmq-config.service';
+export * from './message-broker/utils/rmq-record';
+export * from './message-broker/utils/message-id';
+export * from './message-broker/utils/dlq';

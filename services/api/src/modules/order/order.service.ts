@@ -3,9 +3,9 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, In, Repository } from 'typeorm';
 
-import { CreateOrderDto } from './dto/create-order.dto';
-import { ClientProxyTokenEnum, MessagePatternEnum, OrderStatusEnum } from '@app/lib';
+import { buildRmqRecord, ClientProxyTokenEnum, MessagePatternEnum, OrderStatusEnum } from '@app/lib';
 import { Order } from '@app/lib/database';
+import { CreateOrderDto } from './dto/create-order.dto';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
 import { OrderFiltersDto } from './dto/order-filters.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
@@ -25,7 +25,8 @@ export class OrderService {
       total: dto.total.toFixed(2),
     });
 
-    this.clientProxy.emit(MessagePatternEnum.ORDER_CREATE, order);
+  
+    this.clientProxy.emit(MessagePatternEnum.ORDER_CREATE, buildRmqRecord(order));
 
     return {
       message: 'Your order was successfully created',
@@ -60,8 +61,7 @@ export class OrderService {
         OrderStatusEnum.IN_PROGRESS,
       ]),
     });
-
-    this.clientProxy.emit(MessagePatternEnum.ORDER_CANCEL, order);
+    this.clientProxy.emit(MessagePatternEnum.ORDER_CANCEL, buildRmqRecord(order));
     
     return {
       message: 'The order cancellation successfully initiated',

@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RmqContext } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { CreateOrderContract, MessagePatternEnum, CreatePaymentContract, CancelOrderContract, ClientProxyTokenEnum, OrderStatusEnum } from '@app/lib';
 import { Order } from '@app/lib/database';
@@ -10,10 +10,11 @@ import { Order } from '@app/lib/database';
 @Injectable()
 export class OrderProcessorService {
   constructor(
-    @Inject(ClientProxyTokenEnum.PAYMENT_PUBLISHER)
-    private readonly paymentClient: ClientProxy,
+    private readonly dataSource: DataSource,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    @Inject(ClientProxyTokenEnum.PAYMENT_PUBLISHER)
+    private readonly paymentClient: ClientProxy,
   ) { }
 
   public async create(
