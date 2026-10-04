@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 
 import { OrderProcessorService } from './order-processor.service';
-import { CreateOrderContract, CancelOrderContract, MessagePatternEnum, RetryLimiter, MessageQueueEnum } from '@app/lib';
+import { CreateOrderContract, UpdateOrderStatusContract, MessagePatternEnum, RetryLimiter, MessageQueueEnum, OrderStatusEnum } from '@app/lib';
 
 @Controller()
 export class OrderProcessorController {
@@ -21,8 +21,26 @@ export class OrderProcessorController {
   @RetryLimiter(MessageQueueEnum.ORDER, 3)
   remove(
     @Ctx() context: RmqContext,
-    @Payload() payload: CancelOrderContract,
+    @Payload() payload: UpdateOrderStatusContract,
   ) {
-    return this.orderService.cancel(context, payload);
+    return this.orderService.updateStatus(context, payload, OrderStatusEnum.CANCELLED);
+  }
+
+  @MessagePattern(MessagePatternEnum.ORDER_PAYMENT_CONFIRMED)
+  @RetryLimiter(MessageQueueEnum.ORDER, 3)
+  confirm(
+    @Ctx() context: RmqContext,
+    @Payload() payload: UpdateOrderStatusContract,
+  ) {
+    return this.orderService.updateStatus(context, payload, OrderStatusEnum.CONFIRMED);
+  }
+
+  @MessagePattern(MessagePatternEnum.ORDER_PAYMENT_REJECTED)
+  @RetryLimiter(MessageQueueEnum.ORDER, 3)
+  transferToPending(
+    @Ctx() context: RmqContext,
+    @Payload() payload: UpdateOrderStatusContract,
+  ) {
+    return this.orderService.updateStatus(context, payload, OrderStatusEnum.PENDING);
   }
 }

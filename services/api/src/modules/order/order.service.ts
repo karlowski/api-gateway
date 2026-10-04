@@ -1,9 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, In, Repository } from 'typeorm';
+import { FindOptionsRelations, FindOptionsWhere, In, Repository } from 'typeorm';
 
-import { buildRmqRecord, ClientProxyTokenEnum, MessagePatternEnum, OrderStatusEnum } from '@app/lib';
+import { buildRmqRecord, ClientProxyTokenEnum, CreateOrderContract, MessagePatternEnum, OrderStatusEnum } from '@app/lib';
 import { Order } from '@app/lib/database';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
@@ -25,8 +25,8 @@ export class OrderService {
       total: dto.total.toFixed(2),
     });
 
-  
-    this.clientProxy.emit(MessagePatternEnum.ORDER_CREATE, buildRmqRecord(order));
+    const orderPayload = new CreateOrderContract(order);
+    this.clientProxy.emit(MessagePatternEnum.ORDER_CREATE, buildRmqRecord(orderPayload));
 
     return {
       message: 'Your order was successfully created',
@@ -41,6 +41,8 @@ export class OrderService {
 
     // TODO: filters go here...
 
+    queryBuilder.leftJoinAndSelect('order.payment', 'payment');
+
     const [orders, totalItems] = await queryBuilder
       .skip(skip)
       .take(take)
@@ -50,11 +52,11 @@ export class OrderService {
   }
 
   public async findOne(id: number) {
-    return this.findById(id, ['payment']);
+    return this.findById(id, { payment: true });
   }
 
   public async cancel(id: number): Promise<BaseResponseDto<null>> {
-    const order = await this.findById(id, [], {
+    const order = await this.findById(id, {}, {
       status: In([
         OrderStatusEnum.PENDING,
         OrderStatusEnum.CONFIRMED,
@@ -70,7 +72,7 @@ export class OrderService {
 
   private async findById(
     id: number,
-    relations: string[] = [],
+    relations: FindOptionsRelations<Order> = {},
     where: FindOptionsWhere<Order> = {},
   ): Promise<Order> {
     const order = await this.orderRepository.findOne({

@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
 
+import { Order } from '@app/lib/database';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../../common/guards/auth.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderFiltersDto } from './dto/order-filters.dto';
 import { BaseResponseDto } from '../../common/dto/base-response.dto';
-import { Order } from '@app/lib/database';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order')
@@ -18,7 +18,7 @@ export class OrderController {
   }
 
   @Get()
-  public async findAll(@Param() dto: OrderFiltersDto) {
+  public async findAll(@Query() dto: OrderFiltersDto) {
     return this.orderService.findAll(dto);
   }
 

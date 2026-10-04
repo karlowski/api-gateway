@@ -1,7 +1,7 @@
 export * from './domain/enums/order-status.enum';
 export * from './domain/enums/payment-status.enum';
 
-export * from './message-broker/contracts/order/cancel-order.contract';
+export * from './message-broker/contracts/order/update-order-status.contract';
 export * from './message-broker/contracts/order/create-order.contract';
 export * from './message-broker/contracts/payment/create-payment.contact';
 export * from './message-broker/enums/client-proxy-token.enum';

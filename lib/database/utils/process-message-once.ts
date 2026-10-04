@@ -12,6 +12,9 @@ export const processMessageOnce = <T>(
     try {
       await entityManager.insert(ProcessedMessage, { consumer, messageId });
     } catch (error) {
+      if (error.driverError?.code === 'ER_DUP_ENTRY') { // TODO: make it into a constant
+        return false;
+      }
       throw error;
     }
 
