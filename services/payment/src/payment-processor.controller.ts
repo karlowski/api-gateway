@@ -1,14 +1,21 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
+
+import { CreatePaymentContract, MessagePatternEnum, MessageQueueEnum, RetryLimiter } from '@app/lib';
 import { PaymentProcessorService } from './payment-processor.service';
-import { CreatePaymentContract } from '@app/lib';
 
 @Controller()
 export class PaymentProcessorController {
-  constructor(private readonly paymentService: PaymentProcessorService) {}
+  constructor(
+    private readonly paymentService: PaymentProcessorService
+  ) {}
 
-  @MessagePattern('createPayment')
-  create(@Payload() createPaymentDto: CreatePaymentContract) {
-    return this.paymentService.create(createPaymentDto);
+  @MessagePattern(MessagePatternEnum.PAYMENT_CREATE)
+  @RetryLimiter(MessageQueueEnum.PAYMENT, 3)
+  create(
+    @Ctx() context: RmqContext,
+    @Payload() payload: CreatePaymentContract,
+  ) {
+    return this.paymentService.create(context, payload);
   }
 }

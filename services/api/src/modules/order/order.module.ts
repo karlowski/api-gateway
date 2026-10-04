@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ClientProxy, ClientProxyFactory } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ClientProxyTokenEnum, MessageQueueEnum, RmqConfigService, RmqModule } from '@app/lib';
+import { Order } from '@app/lib/database';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
-import { ClientProxyTokenEnum, MessageQueueEnum, retryName, RmqConfigService, RmqModule } from '@app/lib';
-import { Order } from '@app/lib/database';
 
 @Module({
   controllers: [OrderController],

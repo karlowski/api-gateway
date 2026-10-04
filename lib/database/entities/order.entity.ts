@@ -3,9 +3,8 @@ import {
   PrimaryGeneratedColumn, 
   Column, 
   CreateDateColumn, 
-  UpdateDateColumn, 
-  ManyToOne, 
-  JoinColumn 
+  UpdateDateColumn,
+  OneToOne
 } from 'typeorm';
 
 import { OrderStatusEnum } from '../../domain/enums/order-status.enum';
@@ -17,14 +16,14 @@ export class Order {
   id: number;
 
   @Column()
-  total: string;
+  title: string;
 
   @Column({ 
     type: 'decimal', 
     precision: 10, 
     scale: 2 
   })
-  title: string;
+  total: string;
 
   @Column({ 
     type: 'enum', 
@@ -33,34 +32,19 @@ export class Order {
   })
   status: OrderStatusEnum;
 
-  @Column({ 
-    name: 'payment_id',
-    nullable: true,
-    select: false,
-  })
-  paymentId: number;
-
-  @ManyToOne(() => Payment, { nullable: true })
-  @JoinColumn({ name: 'payment_id' })
+  @OneToOne(() => Payment, (payment) => payment.order)
   payment?: Payment;
-
-  @Column({ 
-    name: 'payment_confirmed_at', 
-    type: 'timestamp', 
-    nullable: true
-  })
-  paymentConfirmedAt?: Date;
-
-  @Column({ 
-    name: 'cancelled_at', 
-    type: 'timestamp', 
-    nullable: true
-  })
-  cancelledAt?: Date;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Column({
+    name: 'status_updated_at',
+    type: 'timestamp',
+    nullable: true
+  })
+  statusUpdatedAt?: Date;
 }
