@@ -48,15 +48,21 @@ ___
 
 #### Launch instructions (not a sequention):
 
-- Install dependencies:
-	
-  ``npm install``
-
 - Setup **.env** by scheme inside **.env.example**
 
 - Complete production build and launch:
 	
   ``docker compose up --build``
+
+- Separate launch, one by one:
+
+  ``docker compose up -d mysql rabbitmq``
+
+  ``docker compose up -d --build api-gateway``
+
+  ``docker compose up -d --build order-service``
+
+  ``docker compose up -d --build payment-service``
 
 - Complete development build (watch mode):
 	
@@ -73,12 +79,12 @@ ___
 	- ~~Payment module (full flow)~~;
 
 2. Microservices:
-	- Order (full flow);
-	- Payment (full flow);
+	- ~~Order (full flow)~~;
+	- ~~Payment (full flow)~~;
 
 3. Configuration:
 	- ~~incorporate migrations in the main flow~~;
-	- DLQ.
+	- ~~DLQ~~.
 
 4. Business logic:
 	- Payment mechanism;	
