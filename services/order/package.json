@@ -1,6 +1,6 @@
 {
   "name": "@app/order",
-  "version": "0.9.2",
+  "version": "0.91.0",
   "private": true,
   "scripts": {
     "build": "nest build",
