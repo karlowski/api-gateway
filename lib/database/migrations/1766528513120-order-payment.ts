@@ -15,11 +15,9 @@ export class OrderPayment1766528513120 implements MigrationInterface {
             .map(v => `'${v}'`)
             .join(', ')}
         ) NOT NULL DEFAULT '${OrderStatusEnum.PENDING}',
-        \`payment_id\` INT NULL,
-        \`payment_confirmed_at\` TIMESTAMP NULL DEFAULT NULL,
-        \`cancelled_at\` TIMESTAMP NULL DEFAULT NULL,
         \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        \`status_updated_at\` TIMESTAMP NULL,
         PRIMARY KEY (\`id\`)
       ) ENGINE=InnoDB;
     `);
@@ -27,12 +25,13 @@ export class OrderPayment1766528513120 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE \`payment\` (
         \`id\` INT NOT NULL AUTO_INCREMENT,
-        \`amount\` DECIMAL(10,2) NOT NULL,
+        \`total\` DECIMAL(10,2) NOT NULL,
         \`status\` ENUM(
           ${Object.values(PaymentStatusEnum)
             .map(v => `'${v}'`)
             .join(', ')}
         ) NOT NULL DEFAULT '${PaymentStatusEnum.PENDING}',
+        \`order_id\` INT UNIQUE, 
         \`created_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         \`status_updated_at\` TIMESTAMP NULL,
@@ -41,12 +40,12 @@ export class OrderPayment1766528513120 implements MigrationInterface {
     `);
 
     await queryRunner.query(
-      `ALTER TABLE \`order_record\` ADD CONSTRAINT \`FK_order_payment_id\` FOREIGN KEY (\`payment_id\`) REFERENCES \`payment\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE \`payment\` ADD CONSTRAINT \`FK_payment_order_id\` FOREIGN KEY (\`order_id\`) REFERENCES \`order_record\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE \`order_record\` DROP CONSTRAINT \`FK_order_payment_id\``);
+    await queryRunner.query(`ALTER TABLE \`payment\` DROP CONSTRAINT \`FK_payment_order_id\``);
     await queryRunner.query(`DROP TABLE \`payment\``);
     await queryRunner.query(`DROP TABLE \`order_record\``);
   }

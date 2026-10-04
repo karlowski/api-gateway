@@ -3,9 +3,13 @@ import {
   PrimaryGeneratedColumn, 
   Column, 
   CreateDateColumn, 
-  UpdateDateColumn 
+  UpdateDateColumn,
+  JoinColumn,
+  OneToOne
 } from 'typeorm';
+
 import { PaymentStatusEnum } from '../../domain/enums/payment-status.enum';
+import { Order } from './order.entity';
 
 @Entity('payment')
 export class Payment {
@@ -13,7 +17,7 @@ export class Payment {
   id: number;
 
   @Column()
-  amount: string;
+  total: string;
 
   @Column({ 
     type: 'enum', 
@@ -21,6 +25,17 @@ export class Payment {
     default: PaymentStatusEnum.PENDING 
    })
   status: PaymentStatusEnum;
+
+  @Column({ 
+    name: 'order_id',
+    nullable: true,
+    select: false,
+  })
+  orderId: number;
+
+@OneToOne(() => Order, (order) => order.payment, { nullable: true })
+  @JoinColumn({ name: 'order_id' })
+  order?: Order;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
